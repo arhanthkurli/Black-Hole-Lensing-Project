@@ -31,7 +31,7 @@ while bounces < 5:
     sol = solve_ivp(ball, (t_start, t_end), state0, events=hit_ground, max_step=.01)
     t_list.append(sol.t)
     y_list.append(sol.y[0])
-# Condition reset after ball hits ground; velocity is reversed, and can be slightly reduced ot simulate energy loss on bounce
+# Condition reset after ball hits ground; velocity is reversed, and can be slightly reduced to simulate energy loss on bounce
     v_new = -sol.y[1][-1] * 0.8  # Coefficient simulates energy loss 
     state0 = [.00001, v_new]
     t_start = sol.t[-1]
