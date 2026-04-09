@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 # Uses ODE to model Newtonian orbit 
 def newtonian_orbit(t, state, GM):
     x, y, vx, vy = state
-    r = np.sqrt(x**2 + y**2)
+    r = np.sqrt(x**2 + y**2) # Distance from star to planet
     dxdt = vx
     dydt = vy
     dvxdt = -GM * x / r**3
