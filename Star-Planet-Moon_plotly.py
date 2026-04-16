@@ -68,6 +68,7 @@ frame_indices = np.arange(0, len(sol.t), frame_stride, dtype=int)
 if frame_indices[-1] != len(sol.t) - 1:
     frame_indices = np.append(frame_indices, len(sol.t) - 1)
 
+
 initial_idx = int(frame_indices[0])
 
 animated_fig = go.Figure(

@@ -47,7 +47,7 @@ x = sol.y[0] # x position over time
 y = sol.y[1] # y position over time
 z = sol.y[2] # z position over time
 
-
+# Plotting the 3D orbit (ENTIRELY AI, NEED TO LEARN THESE COMMANDS)
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
