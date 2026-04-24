@@ -6,13 +6,13 @@ x_source = -10
 x_lens = -5
 screen_x = 0
 screen_half_width = 100
-angle_spread = np.radians(60)
+angle_spread = np.radians(30)
 N = 1000
 
 G = 1.0
 M_lens = 0.3
 GM = G * M_lens
-R_lens = 0.1
+R_lens = 0.3
 v = 1.0
 
 def trajectory(t, state, GM):
@@ -34,9 +34,10 @@ def hit_object(t, state, GM):
 
 hit_object.terminal = True
 
-angles = np.concatenate([-np.logspace(np.log10(np.arctan(R_lens/(x_lens-x_source))), np.log10(angle_spread), N), np.logspace(np.log10(np.arctan(R_lens/(x_lens-x_source))), np.log10(angle_spread), N)])
+#angles = np.concatenate([-np.logspace(np.log10(np.arctan(R_lens/(x_lens-x_source))), np.log10(angle_spread), N), np.logspace(np.log10(np.arctan(R_lens/(x_lens-x_source))), np.log10(angle_spread), N)])
+angles = np.concatenate([np.linspace(-angle_spread, -np.arctan(R_lens/(x_lens-x_source)), N), np.linspace(np.arctan(R_lens/(x_lens-x_source)), angle_spread, N)])
 
-hits = {}
+hits = []
 absorbed = 0
 trajectories = []
 
@@ -54,41 +55,50 @@ for angle in angles:
         y_hit = sol.y_events[0][0][1]
         if -screen_half_width <= y_hit <= screen_half_width:
             if y_hit > 0:
-                hits[angle] = 1
+                hits.append([angle, 1])
             else:
-                hits[angle] = 0
+                hits.append([angle, 0])
     elif len(sol.t_events[1]) > 0:
         absorbed += 1
 
+hit_ranges = []
+start_hit = hits[0][1]
+for hit in hits:
+    if start_hit != hit[1]:
+        hit_ranges.append(hit[0])
+        start_hit = hit[1]
 
-#print(f"hits: {len(hits)}, absorbed: {absorbed}, missed: {N - len(hits) - absorbed}")
+print(hit_ranges)
 
-# Plot distribution
-# bins = 100
-# counts, bin_edges = np.histogram(hits, bins=bins, range=(-screen_half_width, screen_half_width))
-# counts_2d = counts.reshape(1, -1)
+#Plot trajectories
+plt.figure()
+norm = plt.Normalize(-angle_spread, angle_spread)
+colormap = plt.cm.coolwarm
+for i,sol in enumerate(trajectories[::50]):
+    color = colormap(norm(angles[i * 50]))
+    plt.plot(sol.y[0], sol.y[1], color = color, linewidth = 0.5)
 
-# plt.figure(figsize=(10, 3))
-# plt.imshow(counts_2d, extent=[-screen_half_width, screen_half_width, 0, 1],
-#            cmap='hot', norm=LogNorm(), aspect='auto')
-# plt.colorbar(label='hit count')
-# plt.xlabel('y position on screen')
-# plt.title('Gravitational Lensing Distribution')
-# plt.show()
+plt.axvline(x=screen_x, color='white', label='screen')
+plt.axvline(x=x_lens, color='yellow', label='lens')
+plt.xlim(-15, 5)
+plt.ylim(-20, 20)
+plt.grid()
+plt.legend()
+plt.title('Trajectories')
+plt.show()
 
-# Plot trajectories
-# plt.figure()
-# norm = plt.Normalize(-angle_spread, angle_spread)
-# colormap = plt.cm.coolwarm
-# for i,sol in enumerate(trajectories[::20]):
-#     color = colormap(norm(angles[i * 20]))
-#     plt.plot(sol.y[0], sol.y[1], color = color, linewidth = 0.5)
+fig, ax = plt.subplots()
+ax.axvspan(-angle_spread, hit_ranges[0], color='blue', alpha=0.5)
+ax.axvspan(hit_ranges[0], hit_ranges[1], color='red', alpha=0.5)
+ax.axvspan(hit_ranges[1], hit_ranges[2], color='blue', alpha=0.5)
+ax.axvspan(hit_ranges[2], angle_spread, color='red', alpha=0.5)
 
-# plt.axvline(x=screen_x, color='white', label='screen')
-# plt.axvline(x=x_lens, color='yellow', label='lens')
-# plt.xlim(-15, 5)
-# plt.ylim(-20, 20)
-# plt.grid()
-# plt.legend()
-# plt.title('Trajectories')
-# plt.show()
+for point in hit_ranges:
+    ax.axvline(x=point, color='black', linewidth=0.5)
+
+ax.yaxis.set_visible(False)
+ax.set_ylim(0, 1)
+ax.set_xlim(-angle_spread, angle_spread)
+ax.set_xlabel('launch angle (radians)')
+ax.set_title('Screen hit regions')
+plt.show()
