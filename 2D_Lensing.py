@@ -34,8 +34,8 @@ def hit_object(t, state, GM):
 
 hit_object.terminal = True
 
-#angles = np.concatenate([-np.logspace(np.log10(np.arctan(R_lens/(x_lens-x_source))), np.log10(angle_spread), N), np.logspace(np.log10(np.arctan(R_lens/(x_lens-x_source))), np.log10(angle_spread), N)])
-angles = np.concatenate([np.linspace(-angle_spread, -np.arctan(R_lens/(x_lens-x_source)), N), np.linspace(np.arctan(R_lens/(x_lens-x_source)), angle_spread, N)])
+angles = np.concatenate([np.linspace(-angle_spread, -np.arctan(R_lens/(x_lens-x_source)), N), 
+                         np.linspace(np.arctan(R_lens/(x_lens-x_source)), angle_spread, N)])
 
 hits = []
 absorbed = 0
