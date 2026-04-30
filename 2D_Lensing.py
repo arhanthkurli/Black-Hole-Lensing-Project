@@ -102,3 +102,4 @@ ax.set_xlim(-angle_spread, angle_spread)
 ax.set_xlabel('launch angle (radians)')
 ax.set_title('Screen hit regions')
 plt.show()
+

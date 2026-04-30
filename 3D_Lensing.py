@@ -62,8 +62,8 @@ for angle_theta in theta:
 
 radii = np.array([r for r, theta in gradient_map])
 min_idx = np.argmin(radii)
-r_inner = radii[min_idx]              # caustic → inner blue disk
-r_outer = radii[min_idx:].max()       # red side max → red disk
+r_inner = radii[min_idx]            
+r_outer = radii[min_idx:].max()       
 
     
 
@@ -78,27 +78,10 @@ for sol, angle_theta in trajectories[::3]:
     color = colormap(norm_angle(angle_theta))
     ax.plot(sol.y[0], sol.y[1], sol.y[2], color = color, linewidth = 0.5)
 
-r = np.linspace(0, r_inner, 10)
-phi = np.linspace(0, 2*np.pi, 50)
-R, Phi = np.meshgrid(r, phi)
-Y = R * np.cos(Phi)
-Z = R * np.sin(Phi)
-X = np.full_like(Y, screen_x)
-ax.plot_surface(X, Y, Z, color='blue', alpha=0.8)
-
-
-r = np.linspace(0, r_outer, 10)
-phi = np.linspace(0, 2*np.pi, 50)
-R, Phi = np.meshgrid(r, phi)
-Y = R * np.cos(Phi)
-Z = R * np.sin(Phi)
-X = np.full_like(Y, screen_x)
-ax.plot_surface(X, Y, Z, color='red', alpha=0.8)
-
 Y, Z = np.meshgrid([-screen_half_side_length, screen_half_side_length],
                    [-screen_half_side_length, screen_half_side_length])
 X = np.full_like(Y, screen_x)
-ax.plot_surface(X, Y, Z, alpha=0.7, color='blue')
+ax.plot_surface(X, Y, Z, alpha=0.2, color='lightgray')
 
 ax.set_xlim (-11, 1)
 ax.set_ylim (-10, 10)
@@ -107,3 +90,14 @@ ax.set_zlim (-10, 10)
 ax.set_title("Trajectories")
 plt.show()
 
+fig, ax = plt.subplots()
+circle_inner = plt.Circle((0, 0), r_inner, color = 'blue', alpha = 0.5)
+circle_outer = plt.Circle((0, 0), r_outer, color = 'red', alpha = 0.5)
+
+ax.set_facecolor('blue')
+ax.add_patch(circle_outer)
+ax.add_patch(circle_inner)
+ax.set_xlim(-10, 10)
+ax.set_ylim(-10, 10)
+ax.set_aspect(1)
+plt.show()
