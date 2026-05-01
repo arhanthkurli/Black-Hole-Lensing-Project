@@ -84,7 +84,7 @@ plt.xlim(-15, 5)
 plt.ylim(-20, 20)
 plt.grid()
 plt.legend()
-plt.title('Trajectories')
+plt.title('Trajectory Map')
 plt.show()
 
 fig, ax = plt.subplots()
@@ -99,7 +99,5 @@ for point in hit_ranges:
 ax.yaxis.set_visible(False)
 ax.set_ylim(0, 1)
 ax.set_xlim(-angle_spread, angle_spread)
-ax.set_xlabel('launch angle (radians)')
-ax.set_title('Screen hit regions')
+ax.set_title('Gradient Map')
 plt.show()
-
