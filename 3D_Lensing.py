@@ -1,74 +1,77 @@
 import numpy as np
 from scipy.integrate import solve_ivp
+from scipy.spatial.transform import Rotation
 import matplotlib.pyplot as plt
 
-x_source = -10
-x_lens = -5
-screen_x = 0
-screen_half_side_length = 10
-theta_spread = np.radians(30)
-N = 20
+source_position = (-5, 0, 0)
+x_lens = 0
+x_screen = 2
+screen_half_side_length = 5
+theta_spread = np.radians(15)
+plot_half_side = 3
+N = 35
 
-G = 1.0
-M_lens = 0.4
+G = 0.2
+M_lens = 0.3
 GM = G * M_lens
-R_lens = 0.3
+R_lens = 0.07
 v = 1.0
 
 def trajectory(t, state, GM):
     x, y, z, vx, vy, vz = state
-    r = np.sqrt((x - x_lens)**2 + y**2 + z**2)
+    r = np.sqrt(x**2 + y**2 + z**2)
     dxdt = vx
     dydt = vy
     dzdt = vz
-    dvxdt = -GM * (x - x_lens) / r**3
+    dvxdt = -GM * x / r**3
     dvydt = -GM * y / r**3
     dvzdt = -GM * z / r**3
     return [dxdt, dydt, dzdt, dvxdt, dvydt, dvzdt]
 
 def hit_screen(t, state, GM):
-    return state[0] - screen_x
+    return state[0] - x_screen
 
 hit_screen.terminal = True
 
 def hit_object(t, state, GM):
-    return np.sqrt((state[0] - x_lens)**2 + state[1]**2 + state[2]**2) - R_lens
+    return np.sqrt(state[0]**2 + state[1]**2 + state[2]**2) - R_lens
 
 hit_object.terminal = True
 
-theta = np.linspace(np.arctan(R_lens/(x_lens-x_source)), theta_spread, N)
+#theta = np.linspace(np.arctan(R_lens/np.linalg.norm(source_position)), theta_spread, N)
+theta = np.linspace(theta_spread, np.arctan(R_lens/np.linalg.norm(source_position)), N)
+
+Rot, _ = Rotation.align_vectors([ - np.array(source_position) / np.linalg.norm(source_position)], [[1, 0, 0]])
 
 trajectories = []
 hits = []
 gradient_map = []
+absorbed = []
 
 for angle_theta in theta:
     for angle_phi in np.linspace(0, 2 * np.pi, 100):
         vx0 = v * np.cos(angle_theta)
         vy0 = v * np.cos(angle_phi) * np.sin(angle_theta)
         vz0 = v * np.sin(angle_phi) * np.sin(angle_theta)
-        state0 = [x_source, 0, 0, vx0, vy0, vz0] 
+        
+        v_final = Rot.apply([vx0, vy0, vz0])
+        state0 = [source_position[0], source_position[1], source_position[2], v_final[0], v_final[1], v_final[2]] 
 
         sol = solve_ivp(trajectory, (0,100), state0, args = (GM,), 
-                        events = [hit_screen, hit_object], atol = 1e-8, rtol = 1e-8)
-        
-        trajectories.append((sol, angle_theta))
+                        events = [hit_screen, hit_object], atol = 1e-6, rtol = 1e-6)
+        if len(sol.t_events[1]) == 0:
+            trajectories.append((sol, angle_theta))
 
-    if len(sol.t_events[0]) > 0:
-        y_hit = sol.y_events[0][0][1]
-        z_hit = sol.y_events[0][0][2]
-        radius = np.sqrt(y_hit**2 + z_hit**2)
-        gradient_map.append((radius, angle_theta))
-
-radii = np.array([r for r, theta in gradient_map])
-min_idx = np.argmin(radii)
-r_inner = radii[min_idx]            
-r_outer = radii[min_idx:].max()       
-
+        if len(sol.t_events[0]) > 0:
+            y_hit = sol.y_events[0][0][1]
+            z_hit = sol.y_events[0][0][2]
+            gradient_map.append((y_hit, z_hit, angle_theta))
+    
+    if len(sol.t_events[1]) > 0:
+        absorbed.append((sol, angle_theta))
     
 
-
-#Plotting
+# Plotting
 fig = plt.figure()
 ax = fig.add_subplot(111, projection = '3d')
 colormap = plt.cm.coolwarm 
@@ -80,24 +83,18 @@ for sol, angle_theta in trajectories[::3]:
 
 Y, Z = np.meshgrid([-screen_half_side_length, screen_half_side_length],
                    [-screen_half_side_length, screen_half_side_length])
-X = np.full_like(Y, screen_x)
+X = np.full_like(Y, x_screen)
 ax.plot_surface(X, Y, Z, alpha=0.2, color='lightgray')
 
-ax.set_xlim (-11, 1)
-ax.set_ylim (-10, 10)
-ax.set_zlim (-10, 10)
+ax.set_xlim (source_position[0] - 1, x_screen + 1)
+ax.set_ylim (-plot_half_side, plot_half_side)
+ax.set_zlim (-plot_half_side, plot_half_side)
+ax.set_title("Trajectory Map")
 
-ax.set_title("Trajectories")
 plt.show()
 
-fig, ax = plt.subplots()
-circle_inner = plt.Circle((0, 0), r_inner, color = 'blue', alpha = 0.5)
-circle_outer = plt.Circle((0, 0), r_outer, color = 'red', alpha = 0.5)
-
-ax.set_facecolor('blue')
-ax.add_patch(circle_outer)
-ax.add_patch(circle_inner)
-ax.set_xlim(-10, 10)
-ax.set_ylim(-10, 10)
-ax.set_aspect(1)
+y, z, theta = zip(*gradient_map)
+plt.figure(figsize = (20, 20))
+plt.scatter(y, z, color = colormap(norm_angle(theta)), alpha = 0.7)
+plt.title("Gradient Map")
 plt.show()
