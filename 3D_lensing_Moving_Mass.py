@@ -3,42 +3,42 @@ from scipy.integrate import solve_ivp
 from scipy.spatial.transform import Rotation
 import matplotlib.pyplot as plt
 
-source_position = (-10, -2, 0)
-x_lens = 0
+source_position = (-10, -2, 5)
 x_screen = 2
+v_lens = [0, 3, 6]
 screen_half_side_length = 5
 theta_spread = np.radians(15)
 plot_half_side = 3
 N = 35
 
-G = 0.2
-M_lens = 0.3
+
+G = 4
+M_lens = 10
 GM = G * M_lens
 R_lens = 0.07
 v = 1.0
 
-def trajectory(t, state, GM):
+def ray_trajectory(t, state, GM, v_lens):
     x, y, z, vx, vy, vz = state
-    r = np.sqrt(x**2 + y**2 + z**2)
+    r = np.sqrt((x - v_lens[0]*t)**2 + (y- v_lens[1]*t)**2 + (z- v_lens[2]*t)**2)
     dxdt = vx
     dydt = vy
     dzdt = vz
-    dvxdt = -GM * x / r**3
-    dvydt = -GM * y / r**3
-    dvzdt = -GM * z / r**3
+    dvxdt = -GM * (x - v_lens[0]*t) / r**3
+    dvydt = -GM * (y - v_lens[1]*t) / r**3
+    dvzdt = -GM * (z - v_lens[2]*t) / r**3
     return [dxdt, dydt, dzdt, dvxdt, dvydt, dvzdt]
 
-def hit_screen(t, state, GM):
+def hit_screen(t, state, GM, v_lens):
     return state[0] - x_screen
 
 hit_screen.terminal = True
 
-def hit_object(t, state, GM):
-    return np.sqrt(state[0]**2 + state[1]**2 + state[2]**2) - R_lens
+def hit_object(t, state, GM, v_lens):
+    return np.sqrt((state[0] - v_lens[0]*t)**2 + (state[1] - v_lens[1]*t)**2 + (state[2] - v_lens[2]*t)**2) - R_lens
 
 hit_object.terminal = True
 
-#theta = np.linspace(np.arctan(R_lens/np.linalg.norm(source_position)), theta_spread, N)
 theta = np.linspace(theta_spread, np.arctan(R_lens/np.linalg.norm(source_position)), N)
 
 Rot, _ = Rotation.align_vectors([ - np.array(source_position) / np.linalg.norm(source_position)], [[1, 0, 0]])
@@ -57,7 +57,7 @@ for angle_theta in theta:
         v_final = Rot.apply([vx0, vy0, vz0])
         state0 = [source_position[0], source_position[1], source_position[2], v_final[0], v_final[1], v_final[2]] 
 
-        sol = solve_ivp(trajectory, (0,100), state0, args = (GM,), 
+        sol = solve_ivp(ray_trajectory, (0,100), state0, args = (GM, v_lens), 
                         events = [hit_screen, hit_object], atol = 1e-6, rtol = 1e-6)
         if len(sol.t_events[1]) == 0:
             trajectories.append((sol, angle_theta))

@@ -9,9 +9,9 @@ x_screen = 2
 screen_half_side_length = 5
 theta_spread = np.radians(15)
 plot_half_side = 3
-N = 35
+N = 50
 
-G = 0.2
+G = 2
 M_lens = 0.3
 GM = G * M_lens
 R_lens = 0.07
@@ -62,39 +62,45 @@ for angle_theta in theta:
         if len(sol.t_events[1]) == 0:
             trajectories.append((sol, angle_theta))
 
-        if len(sol.t_events[0]) > 0:
+        if len(sol.t_events[0]) > 0 and len(sol.t_events[1]) == 0:
             y_hit = sol.y_events[0][0][1]
             z_hit = sol.y_events[0][0][2]
-            gradient_map.append((y_hit, z_hit, angle_theta))
+            gradient_map.append((y_hit, z_hit, angle_theta, angle_phi))
     
     if len(sol.t_events[1]) > 0:
         absorbed.append((sol, angle_theta))
     
 
-# Plotting
+# Trajectory Plotting
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection = '3d')
+# colormap = plt.cm.coolwarm 
+# norm_angle = plt.Normalize(0, theta_spread)
+
+# for sol, angle_theta in trajectories[::3]:
+#     color = colormap(norm_angle(angle_theta))
+#     ax.plot(sol.y[0], sol.y[1], sol.y[2], color = color, linewidth = 0.5)
+
+# Y, Z = np.meshgrid([-screen_half_side_length, screen_half_side_length],
+#                    [-screen_half_side_length, screen_half_side_length])
+# X = np.full_like(Y, x_screen)
+# ax.plot_surface(X, Y, Z, alpha=0.2, color='lightgray')
+
+# ax.set_xlim (source_position[0] - 1, x_screen + 1)
+# ax.set_ylim (-plot_half_side, plot_half_side)
+# ax.set_zlim (-plot_half_side, plot_half_side)
+# ax.set_title("Trajectory Map")
+
+# plt.show()
+
+#Gradient Plotting
 fig = plt.figure()
-ax = fig.add_subplot(111, projection = '3d')
-colormap = plt.cm.coolwarm 
-norm_angle = plt.Normalize(0, theta_spread)
-
-for sol, angle_theta in trajectories[::3]:
-    color = colormap(norm_angle(angle_theta))
-    ax.plot(sol.y[0], sol.y[1], sol.y[2], color = color, linewidth = 0.5)
-
-Y, Z = np.meshgrid([-screen_half_side_length, screen_half_side_length],
-                   [-screen_half_side_length, screen_half_side_length])
-X = np.full_like(Y, x_screen)
-ax.plot_surface(X, Y, Z, alpha=0.2, color='lightgray')
-
-ax.set_xlim (source_position[0] - 1, x_screen + 1)
-ax.set_ylim (-plot_half_side, plot_half_side)
-ax.set_zlim (-plot_half_side, plot_half_side)
-ax.set_title("Trajectory Map")
-
-plt.show()
-
-y, z, theta = zip(*gradient_map)
-plt.figure(figsize = (20, 20))
-plt.scatter(y, z, color = colormap(norm_angle(theta)), alpha = 0.7)
+ax = fig.add_subplot(projection='polar')
+for item in gradient_map:
+    if np.floor(item[0]) % 2 == np.floor(item[1]) % 2:
+        color = 'blue'
+    else:
+        color = 'red'
+    scatter = ax.scatter(item[3], 5*np.sin(item[2]), color = color, alpha = 0.75, s = 10)
 plt.title("Gradient Map")
 plt.show()
