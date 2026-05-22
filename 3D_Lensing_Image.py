@@ -71,36 +71,37 @@ for angle_theta in theta:
         absorbed.append((sol, angle_theta))
     
 
-# Trajectory Plotting
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection = '3d')
-# colormap = plt.cm.coolwarm 
-# norm_angle = plt.Normalize(0, theta_spread)
+#Trajectory Plotting
+fig = plt.figure()
+ax = fig.add_subplot(111, projection = '3d')
+colormap = plt.cm.coolwarm 
+norm_angle = plt.Normalize(0, theta_spread)
 
-# for sol, angle_theta in trajectories[::3]:
-#     color = colormap(norm_angle(angle_theta))
-#     ax.plot(sol.y[0], sol.y[1], sol.y[2], color = color, linewidth = 0.5)
+for sol, angle_theta in trajectories[::3]:
+    color = colormap(norm_angle(angle_theta))
+    ax.plot(sol.y[0], sol.y[1], sol.y[2], color = color, linewidth = 0.5)
 
-# Y, Z = np.meshgrid([-screen_half_side_length, screen_half_side_length],
-#                    [-screen_half_side_length, screen_half_side_length])
-# X = np.full_like(Y, x_screen)
-# ax.plot_surface(X, Y, Z, alpha=0.2, color='lightgray')
+Y, Z = np.meshgrid([-screen_half_side_length, screen_half_side_length],
+                   [-screen_half_side_length, screen_half_side_length])
+X = np.full_like(Y, x_screen)
+ax.plot_surface(X, Y, Z, alpha=0.2, color='lightgray')
 
-# ax.set_xlim (source_position[0] - 1, x_screen + 1)
-# ax.set_ylim (-plot_half_side, plot_half_side)
-# ax.set_zlim (-plot_half_side, plot_half_side)
-# ax.set_title("Trajectory Map")
+ax.set_xlim (source_position[0] - 1, x_screen + 1)
+ax.set_ylim (-plot_half_side, plot_half_side)
+ax.set_zlim (-plot_half_side, plot_half_side)
+ax.set_title("Trajectory Map")
 
-# plt.show()
+plt.show()
 
 #Gradient Plotting
 fig = plt.figure()
 ax = fig.add_subplot(projection='polar')
 for item in gradient_map:
-    if np.floor(item[0]) % 2 == np.floor(item[1]) % 2:
+    if np.floor(2*item[0]) % 2 == np.floor(2*item[1]) % 2:
         color = 'blue'
     else:
         color = 'red'
     scatter = ax.scatter(item[3], 5*np.sin(item[2]), color = color, alpha = 0.75, s = 10)
 plt.title("Gradient Map")
+
 plt.show()
