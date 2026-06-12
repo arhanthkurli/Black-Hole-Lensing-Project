@@ -92,7 +92,8 @@ N_phi = 60
 theta_min = np.arcsin(2.4 * R_s/r_source)
 theta_max = np.arcsin(30.0 * R_s/r_source)
 
-theta_values = np.linspace(theta_min, theta_max, N_theta)
+b = 2.598 * R_s + np.logspace(np.log10(0.003), np.log10(2), N_theta)
+theta_values = np.arcsin(b/r_source)
 phi_values = np.linspace(0, 2*np.pi, N_phi, endpoint=False)
 
 trajectories = []
@@ -112,7 +113,7 @@ for i_theta, angle_theta in enumerate(theta_values):
 
         sol = solve_ivp(trajectory, (0,400), state0, 
                         events = [hit_screen, hit_object], 
-                        atol = 1e-6, rtol = 1e-6, max_step = 1.0)
+                        atol = 1e-6, rtol = 1e-6, max_step = 0.1)
         
         trajectories.append({'sol': sol,
                             'i_theta': i_theta, 'i_phi': i_phi,
@@ -132,8 +133,8 @@ def plot_trajectories(trajs, R_s):
     
     ax.add_patch(plt.Circle((0, 0), R_s, color='k'))
     ax.add_patch(plt.Circle((0, 0), 1.5 * R_s, color='orange', fill=False, ls='--'))
-    
-    ax.set_xlim(-50, 50); ax.set_ylim(-50, 50)
+
+    ax.set_xlim(-5, 5); ax.set_ylim(-5, 5)
     ax.set_aspect('equal'); ax.set_xlabel('x'); ax.set_ylabel('y')
     plt.show()
 
