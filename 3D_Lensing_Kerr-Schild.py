@@ -1,10 +1,11 @@
+#%%
 import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.spatial.transform import Rotation
 import sympy as sp
 import matplotlib.pyplot as plt
 import json
-
+from time import time
 
 #Positional Parameters
 source_position = (-50.0, 0.0, 0.0)
@@ -12,6 +13,8 @@ x_screen = 30.0
 
 #Adjustable Constants
 G, M, a = 1.0, 0.5, 0.25
+# Set the spin to 0 for testing
+G, M, a = 1.0, 0.5, 0.0
 
 r_plus = M + np.sqrt(M**2 - a**2)
 r_cut = 1.10 * r_plus
@@ -37,48 +40,62 @@ g = eta + f * k * k.T
 g_inv = eta - f * l * l.T
 
 print('g and g_inv calculated')
-
+#%%
 #Computing christoffels
 
 coords = [t, x, y, z]
 derivatives = [[[0 for _ in range(4)] for _ in range(4)] for _ in range(4)]
 
 for i in range(4):
-    for j in range(4):
+    # g[i, j] = g[j, i], so differentiate only the upper triangle.
+    for j in range(i, 4):
         for d in range(4):
-            derivatives[i][j][d] = sp.diff(g[i, j], coords[d])
-
+            start_time = time()
+            derivative = sp.simplify(sp.diff(g[i, j], coords[d]))
+            derivatives[i][j][d] = derivative
+            derivatives[j][i][d] = derivative
+            print(f"{i},{j},{d}: {time()-start_time}")
+#%%
 print('Derivative list created')
 
 def compute_christoffel():
     out = [[[0 for _ in range(4)] for _ in range (4)] for _ in range(4)]
+    half = sp.Rational(1, 2)
     for mu in range(4):
         for alpha in range(4):
-            for beta in range(4):
+            # The Levi-Civita connection is symmetric in its lower indices.
+            for beta in range(alpha, 4):
                 total = 0
                 for lmbda in range(4):
-                    total += 0.5 *g_inv[mu, lmbda] * (derivatives[lmbda][beta][alpha] + 
-                                                      derivatives[lmbda][alpha][beta] - 
-                                                      derivatives[alpha][beta][lmbda])
-                print('cancel start')
-                out[mu][alpha][beta] = sp.cancel(total)
-                print('cancel done')
+                    total += half * g_inv[mu, lmbda] * (
+                        derivatives[lmbda][beta][alpha]
+                        + derivatives[lmbda][alpha][beta]
+                        - derivatives[alpha][beta][lmbda]
+                    )
+                start_time = time()
+                christoffel = sp.simplify(total)
+                out[mu][alpha][beta] = christoffel
+                out[mu][beta][alpha] = christoffel
+                print(f"{mu},{alpha},{beta}: {time()-start_time}")
     return out
 
 result = compute_christoffel()
 
 print('Christoffels computed')
-
+#%%
 nonzero_index, nonzero_value = [], []
 for mu in range(4):
     for alpha in range(4):
-        for beta in range (4):
+        # Keep only independent lower-index pairs.  Off-diagonal terms get a
+        # factor of two in the geodesic contraction below.
+        for beta in range(alpha, 4):
             if result[mu][alpha][beta] != 0:
                 nonzero_index.append((mu, alpha, beta))
                 nonzero_value.append(result[mu][alpha][beta])
 
 Gamma = sp.lambdify([x, y, z], nonzero_value, 'numpy', cse = True)
 
+#%%
 print('Gamma lambdified')
 
 def trajectory(tau, state):
@@ -87,7 +104,8 @@ def trajectory(tau, state):
     du = [0.0 for _ in range(4)]
     Gamma_result = Gamma(x, y, z)
     for (mu, alpha, beta), value in zip(nonzero_index, Gamma_result):
-        du[mu] -= value * u[alpha] * u[beta]
+        symmetry_factor = 1 if alpha == beta else 2
+        du[mu] -= symmetry_factor * value * u[alpha] * u[beta]
     return np.concatenate((u, du))
 
 print('Trajectory defined')
@@ -185,3 +203,5 @@ print('Json dump completed')
 
 
 
+
+# %%
