@@ -7,6 +7,14 @@ import matplotlib.pyplot as plt
 import json
 from time import time
 
+with open('christoffels.json') as file:
+    christoffel_dict = json.load(file)
+
+nonzero_index = christoffel_dict['index']
+nonzero_value = [sp.sympify(item) for item in christoffel_dict['value']]
+
+symbols = sorted(set().union(*[expr.free_symbols for expr in nonzero_value]), key = str)
+
 #Positional Parameters
 source_position = (-50.0, 0.0, 0.0)
 x_screen = 30.0
@@ -20,80 +28,9 @@ r_plus = M + np.sqrt(M**2 - a**2)
 r_cut = 1.10 * r_plus
 R_escape = 80
 
-t, x, y, z = sp.symbols('t x y z')
+print('Gamma lambdification begins')
 
-R2 = x**2 + y**2 + z**2
-r = sp.sqrt((R2 - a**2 + sp.sqrt((R2 - a**2)**2 + 4 * a**2 * z**2))/2)
-
-eta = sp.diag(-1, 1, 1, 1)
-f = 2 * G * M * r**3/(r**4 + a**2 * z**2)
-
-k_x = (r*x + a*y)/(r**2 + a**2)
-k_y = (r*y - a*x)/(r**2 + a**2)
-k_z = z/r
-
-k = sp.Matrix([1, k_x, k_y, k_z])
-l = sp.Matrix([-1, k_x, k_y, k_z])
-
-g = eta + f * k * k.T
-
-g_inv = eta - f * l * l.T
-
-print('g and g_inv calculated')
-#%%
-#Computing christoffels
-
-coords = [t, x, y, z]
-derivatives = [[[0 for _ in range(4)] for _ in range(4)] for _ in range(4)]
-
-for i in range(4):
-    # g[i, j] = g[j, i], so differentiate only the upper triangle.
-    for j in range(i, 4):
-        for d in range(4):
-            start_time = time()
-            derivative = sp.simplify(sp.diff(g[i, j], coords[d]))
-            derivatives[i][j][d] = derivative
-            derivatives[j][i][d] = derivative
-            print(f"{i},{j},{d}: {time()-start_time}")
-#%%
-print('Derivative list created')
-
-def compute_christoffel():
-    out = [[[0 for _ in range(4)] for _ in range (4)] for _ in range(4)]
-    half = sp.Rational(1, 2)
-    for mu in range(4):
-        for alpha in range(4):
-            # The Levi-Civita connection is symmetric in its lower indices.
-            for beta in range(alpha, 4):
-                total = 0
-                for lmbda in range(4):
-                    total += half * g_inv[mu, lmbda] * (
-                        derivatives[lmbda][beta][alpha]
-                        + derivatives[lmbda][alpha][beta]
-                        - derivatives[alpha][beta][lmbda]
-                    )
-                start_time = time()
-                christoffel = sp.simplify(total)
-                out[mu][alpha][beta] = christoffel
-                out[mu][beta][alpha] = christoffel
-                print(f"{mu},{alpha},{beta}: {time()-start_time}")
-    return out
-
-result = compute_christoffel()
-
-print('Christoffels computed')
-#%%
-nonzero_index, nonzero_value = [], []
-for mu in range(4):
-    for alpha in range(4):
-        # Keep only independent lower-index pairs.  Off-diagonal terms get a
-        # factor of two in the geodesic contraction below.
-        for beta in range(alpha, 4):
-            if result[mu][alpha][beta] != 0:
-                nonzero_index.append((mu, alpha, beta))
-                nonzero_value.append(result[mu][alpha][beta])
-
-Gamma = sp.lambdify([x, y, z], nonzero_value, 'numpy', cse = True)
+Gamma = sp.lambdify(symbols, nonzero_value, 'numpy', cse = True)
 
 #%%
 print('Gamma lambdified')
@@ -163,9 +100,9 @@ for i_theta, angle_theta in enumerate(theta_values):
                             'absorbed': len(sol.t_events[2]) > 0})
 
         if sol.y_events[0].size: hit_points.append((float(sol.y_events[0][0][2]), 
-                                                    float(sol.y_events[0][0][3], 
+                                                    float(sol.y_events[0][0][3]), 
                                                     float(i_theta), 
-                                                    float(i_phi))))
+                                                    float(i_phi)))
 
     print(f'Angle {i_theta} of {N_theta} completed')
 
