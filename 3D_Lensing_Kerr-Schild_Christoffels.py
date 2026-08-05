@@ -8,11 +8,9 @@ import json
 from time import time
 
 #Adjustable Constants
-G, M, a = 1.0, 0.5, 0.25
-# Set the spin to 0 for testing
-G, M, a = 1.0, 0.5, 0.0
+G, M= 1.0, 0.5
 
-t, x, y, z = sp.symbols('t x y z')
+a, t, x, y, z = sp.symbols('a t x y z')
 
 R2 = x**2 + y**2 + z**2
 r = sp.sqrt((R2 - a**2 + sp.sqrt((R2 - a**2)**2 + 4 * a**2 * z**2))/2)
