@@ -1,0 +1,65 @@
+/* The homepage is a working viewer; the other pages share styles.css. */
+.explorer-page main, .explorer-page .page-footer { max-width: min(1920px, max(1480px, calc(122svh + 432px))); }
+.explorer-page main { padding-block: 24px 48px; }
+.spin-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-bottom: 16px; }
+.spin-picker .choices { flex: 0 1 420px; }
+.spin-picker .choices button { min-width: 0; }
+.spin-picker > a { font-size: .8rem; }
+.kerr-still-frame { aspect-ratio: 4 / 3; }
+.kerr-still-frame img, #kerr-unlensed { display: block; width: 100%; height: 100%; object-fit: contain; }
+#kerr-unlensed[data-view="overview"] { background: conic-gradient(#22c55e 0 25%, #facc15 25% 50%, #3b82f6 50% 75%, #ef4444 75%); }
+#kerr-unlensed[data-view="left"] { background: linear-gradient(#ef4444 0 50%, #3b82f6 50%); }
+#kerr-unlensed[data-view="right"] { background: linear-gradient(#22c55e 0 50%, #facc15 50%); }
+.explorer-page .kerr-controls { display: block; }
+.kerr-still-download { display: inline-block; margin-top: 12px; font-size: .76rem; }
+.explorer-page #refined-mode { margin-top: 0; }
+@media (max-width: 760px) { .explorer-page #schwarzschild-explorer .view-control { grid-row: 1; } }
+.explorer-page .viewer { grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; margin: 0; padding: 0; border: 0; }
+.explorer-page .image-panel { padding: 16px; border: 1px solid var(--rule); border-radius: 12px; background: var(--paper); }
+.explorer-page .image-heading { min-height: 23px; font-size: .74rem; margin-bottom: 12px; }
+.explorer-page .canvas-frame { position: relative; border-radius: 5px; border: 0; }
+.overview-frame > img, .overview-frame > canvas { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; }
+.select-field { max-width: 24rem; min-width: 0; }
+.select-heading { position: relative; display: flex; align-items: center; gap: 7px; margin: 8px 0 4px; color: var(--muted); font-size: .76rem; }
+.select-info { display: inline-flex; }
+.select-info button { width: 24px; height: 24px; min-height: 0; padding: 0; border-radius: 50%; font: 600 .78rem/1 system-ui, sans-serif; color: var(--accent); }
+.select-tip { position: absolute; z-index: 5; inset-block-start: 100%; inset-inline-start: 0; width: min(100%, 19rem); padding: 9px 11px; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); box-shadow: 0 3px 12px #202a3820; color: var(--ink); line-height: 1.5; }
+.explorer-page .image-footer { gap: 7px 16px; padding-top: 4px; font-size: .69rem; }
+.explorer-page .legend { display: inline-flex; margin-top: 12px; font-size: .68rem; }
+.explorer-page #status { font-size: .68rem; margin-top: 10px; }
+.explorer-page .controls { padding: 20px; border-radius: 12px; }
+.explorer-page .controls h2 { color: var(--strong); font-size: .69rem; letter-spacing: .07em; text-transform: uppercase; font-weight: 550; margin-bottom: 12px; }
+.explorer-page .controls section + section, .explorer-page .controls > .geometry { padding-top: 17px; margin-top: 17px; }
+.explorer-page .spacetime-control .choices { display: grid; grid-template-columns: 1.4fr 1fr 1fr; }
+.explorer-page .choices button { width: auto; font-size: .7rem; padding: 8px 5px; min-height: 43px; }
+.explorer-page .choices button small { font-size: .61rem; }
+.explorer-page .choices button small:empty { display: none; }
+.explorer-page .background-control > .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.explorer-page .background-control > .choices button { min-height: 39px; }
+.explorer-page .background-control > .choices button small { display: none; }
+.explorer-page .controls .hint { font-size: .68rem; line-height: 1.6; }
+.explorer-page #metric-status { margin-bottom: 0; }
+.explorer-page :is(#status, #metric-status):empty { margin: 0; }
+.explorer-page .legend:not(:has(span:not([hidden]))) { display: none; }
+.source-tools { padding: 11px 0; margin-top: 12px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.source-tools > summary { color: var(--strong); font-size: .71rem; }
+.explorer-page .switch-row { font-size: .71rem; margin-top: 15px; }
+.explorer-page .save-button { min-height: 38px; margin-top: 14px; font-size: .72rem; }
+.map-details { margin-top: 15px; padding-top: 13px; border-top: 1px solid var(--rule); }
+.map-details > summary { font-size: .7rem; color: var(--muted); }
+.map-details .view-context { margin-top: 18px; padding-top: 0; border-top: 0; }
+.map-details > .hint { margin: 18px 0 0; }
+.map-details .geometry { margin: 16px 0 0; max-width: 390px; }
+.explorer-page #method { margin-top: 32px; padding-top: 22px; }
+.sky-guide { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.65fr); gap: 24px; align-items: center; padding: 15px 0; }
+.sky-orbit { max-width: 580px; margin: 0; }
+.sky-orbit canvas { width: 100%; aspect-ratio: 28 / 19; background: transparent; cursor: grab; touch-action: none; }
+.sky-orbit canvas:active { cursor: grabbing; }
+.sky-orbit canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 6px; }
+.sky-orbit figcaption { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 14px; color: var(--muted); font-size: .75rem; }
+.sky-orbit figcaption span { flex: 1 1 15rem; }
+.sky-orbit button { min-height: 32px; font-size: .74rem; }
+.explorer-page .page-footer { border: 0; padding-top: 20px; }
+@media (max-width: 1000px) { .explorer-page main { padding: 24px; } .explorer-page .viewer { grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; } .explorer-page .controls { padding: 16px; } .explorer-page .spacetime-control .choices { grid-template-columns: 1.4fr 1fr 1fr; } .explorer-page .choices button { font-size: .64rem; } }
+@media (max-width: 760px) { .explorer-page main { padding: 20px; } .explorer-heading { align-items: start; margin-bottom: 20px; } .explorer-heading p { max-width: 190px; font-size: .75rem; } .explorer-page .viewer { grid-template-columns: minmax(0, 1fr); } .explorer-page .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } .explorer-page .controls section + section, .explorer-page .controls > .geometry { padding: 0; margin: 0; border: 0; } .explorer-page .controls .view-control { grid-column: 1; grid-row: 2; } .explorer-page .controls .background-control { grid-column: 2; grid-row: 1 / 4; } .explorer-page .controls > .geometry { grid-column: 1; } .explorer-page .choices button { font-size: .7rem; } }
+@media (max-width: 500px) { .explorer-page main { padding: 18px 16px 32px; } .explorer-page .image-panel { padding: 10px; border-radius: 9px; } .explorer-page .image-heading { font-size: .65rem; margin-bottom: 9px; } .explorer-page .controls { display: block; } .explorer-page .controls section + section { padding-top: 16px; margin-top: 16px; border-top: 1px solid var(--rule); } .sky-guide { grid-template-columns: 1fr; gap: 0; } }

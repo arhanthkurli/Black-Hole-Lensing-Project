@@ -1,95 +1,175 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>UV Warp Map Demo</title>
-    <style>
-      :root {
-        color-scheme: dark;
-        font-family: system-ui, sans-serif;
-        background: #111318;
-        color: #eef0f4;
-      }
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Explore precomputed Schwarzschild and Kerr null-geodesic lensing, compare spin, and inspect independently sampled near-critical views." />
+  <title>Single black hole</title>
+  <link rel="stylesheet" href="styles.css?v=0b7bb391ba0c" />
+  <link rel="stylesheet" href="explorer.css?v=6b65ad54a57e" />
+  <link rel="stylesheet" href="reference.css?v=c8c61a315d78" />
+</head>
+<body class="explorer-page">
+  <header class="site-header">
+    <div class="header-copy"><h1>Single black hole</h1></div>
+    <nav aria-label="Main navigation"><a href="index.html" aria-current="page">SingleBh</a><a href="ray-viewer/index.html">3D</a><a href="moving/index.html">MovingBh</a><a href="examples/index.html">Disk</a><a href="binary/index.html">Binary</a></nav>
+  </header>
+<main>
 
-      body {
-        display: grid;
-        min-height: 100vh;
-        margin: 0;
-        place-items: center;
-      }
+  <div class="spin-picker">
+    <div class="choices" role="group" aria-label="Black-hole spacetime">
+      <button id="schwarzschild-mode" type="button" aria-pressed="true">Schwarzschild<small>a/M = 0</small></button>
+      <button id="kerr-mode" type="button" aria-pressed="false" data-kerr-spin="0.5">Kerr<small>a/M = 0.5</small></button>
+      <button id="kerr-high-spin-mode" type="button" aria-pressed="false" data-kerr-spin="0.99">Kerr<small>a/M = 0.99</small></button>
+    </div>
+    <a href="#method">How it works</a>
+  </div>
 
-      main {
-        width: min(900px, calc(100% - 32px));
-      }
-
-      h1 {
-        margin-bottom: 8px;
-        font-size: clamp(1.4rem, 4vw, 2rem);
-      }
-
-      p {
-        color: #aeb5c1;
-      }
-
-      canvas {
-        display: block;
-        width: 100%;
-        aspect-ratio: 4 / 3;
-        border: 1px solid #343945;
-        border-radius: 8px;
-        background: #000;
-      }
-
-      .controls {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 16px;
-      }
-
-      button {
-        padding: 10px 14px;
-        border: 1px solid #4b5261;
-        border-radius: 6px;
-        background: #252a34;
-        color: inherit;
-        cursor: pointer;
-        font: inherit;
-      }
-
-      button:hover:not(:disabled) {
-        background: #343b49;
-      }
-
-      button:disabled {
-        cursor: wait;
-        opacity: 0.5;
-      }
-
-      code {
-        color: #d7dcff;
-      }
-    </style>
-  </head>
-  <body>
-    <main>
-      <h1>Lookup-map lensing demo</h1>
-      <p>
-        A four-quadrant test grid distorted by <code>warp-map.json</code>.
-        Curved grid lines reveal the lensing; the black center is invalid.
-      </p>
-      <canvas id="view" aria-label="Distorted four-color background"></canvas>
-      <div class="controls" aria-label="Image source controls">
-        <button id="video-mode" type="button" disabled>Start video</button>
-        <button id="picture-mode" type="button" disabled>Take camera picture</button>
-        <button id="upload-button" type="button" disabled>Upload image</button>
-        <button id="download-button" type="button" disabled>Download image</button>
-        <input id="image-upload" type="file" accept="image/*" hidden />
+  <div class="viewer" id="schwarzschild-explorer" data-renderer="app.js?v=01eaf713c453">
+    <section class="image-panel" aria-label="Rendered observer image">
+      <div class="image-heading"><strong id="active-metric">Schwarzschild · a/M = 0</strong><span id="active-view">Overview · 60° vertical field</span></div>
+      <div class="canvas-frame overview-frame">
+        <img id="overview-image" src="data/schwarzschild-octants/overview-r20.png?v=e7fed7c7368f" width="640" height="480" alt="Eight-color sky lensed by a Schwarzschild black hole" />
+        <canvas id="view" hidden aria-label="Black-hole-lensed background">This viewer requires WebGL 2.</canvas>
       </div>
-      <video id="camera" autoplay playsinline muted hidden></video>
-      <p id="status">Loading warp map…</p>
-    </main>
-    <script type="module" src="app.js"></script>
-  </body>
+      <div class="legend"><span id="capture-legend"><i class="swatch" aria-hidden="true"></i>Black hole shadow</span><span id="field-legend" hidden><i class="swatch light" aria-hidden="true"></i></span></div>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+
+    </section>
+
+    <aside class="controls" aria-label="Explorer controls">
+      <section class="view-control">
+        <h2>View</h2>
+        <button id="refined-mode" class="wide" type="button" data-saved-closeups="true">Close-up</button>
+        <p id="metric-status" class="hint" role="status"></p>
+      </section>
+      <section class="background-control">
+        <h2>Background</h2>
+        <div class="choices" role="group" aria-label="Built-in background sources">
+          <button id="octants-mode" type="button" aria-pressed="true">Eight colors<small>Whole sky</small></button>
+          <button id="sky-mode" type="button" aria-pressed="false">Milky Way</button>
+        </div>
+        <label class="switch-row" for="show-black-hole"><input id="show-black-hole" type="checkbox" checked />Show black hole</label>
+        <details class="source-tools" id="source-tools"><summary>Photo and camera</summary>
+        <p id="local-photo-note" class="hint" hidden>Open the site over HTTP or HTTPS to use photos and camera.</p>
+        <button id="upload-button" class="wide" type="button" disabled>Upload a photo</button>
+        <div class="camera-controls"><button id="video-mode" type="button" disabled>Start video</button><button id="picture-mode" type="button" disabled>Take picture</button></div>
+        <input id="image-upload" type="file" accept="image/*" hidden />
+        <video id="camera" autoplay playsinline muted hidden></video>
+        </details>
+        <button id="download-button" class="wide save-button" type="button">Save PNG</button>
+      </section>
+    </aside>
+  </div>
+
+  <div class="viewer" id="saved-stills" data-still-version="e7fed7c7368f" hidden>
+    <section class="image-panel" aria-label="Saved black hole view">
+      <div class="image-heading"><strong id="saved-heading">Kerr · a/M = 0.5</strong><span id="saved-view">Overview</span></div>
+      <div class="canvas-frame kerr-still-frame">
+        <img id="saved-image" width="640" height="480" alt="" />
+        <div id="kerr-unlensed" role="img" aria-label="The same sky without a black hole" hidden></div>
+      </div>
+      <p class="status" id="saved-status" role="status" aria-live="polite"></p>
+    </section>
+    <aside class="controls kerr-controls" aria-label="Saved view controls">
+      <section>
+        <div class="select-field">
+          <div class="select-heading">
+            <label for="saved-patch">View</label>
+            <span class="select-info">
+              <button type="button" aria-label="About close-up widths" aria-expanded="false" aria-controls="saved-patch-tip" aria-describedby="saved-patch-tip">i</button>
+              <span id="saved-patch-tip" class="select-tip" role="tooltip" hidden>Close-up widths are measured on a screen 20 M from the observer. For Kerr, the left edge is prograde and the right edge is retrograde.</span>
+            </span>
+          </div>
+          <select id="saved-patch">
+            <option value="overview">Overview</option>
+            <option value="left-modest">Left · 0.19 M wide</option>
+            <option value="left-deep">Left · 0.0077 M wide</option>
+            <option value="right-modest">Right · 0.19 M wide</option>
+            <option value="right-deep">Right · 0.0077 M wide</option>
+          </select>
+        </div>
+      </section>
+      <section>
+        <div class="choices" id="saved-background" role="group" aria-label="Background" hidden>
+          <button type="button" aria-pressed="true" data-sky="octants">Eight colors</button>
+          <button type="button" aria-pressed="false" data-sky="sky">Milky Way</button>
+        </div>
+        <label class="switch-row" for="saved-hole"><input id="saved-hole" type="checkbox" checked />Show black hole</label>
+        <a id="saved-download" class="kerr-still-download" download>Save PNG</a>
+      </section>
+    </aside>
+  </div>
+
+  <section class="science page-notes" id="method">
+    <h2>How it works</h2>
+    <p>Light is traced backward from each pixel to the sky. Rays captured by the black hole form the shadow. Rays that loop around it can bring the same region of sky into view more than once.</p>
+    <div class="sky-guide">
+      <div>
+        <h3>Sky octants</h3>
+        <p>Each color marks one of eight regions of the sky. The camera sits 20 M from the black hole and points toward it.</p>
+      </div>
+        <figure class="sky-orbit">
+      <canvas id="sky-orbit" width="560" height="380" tabindex="0" role="img" aria-label="Rotatable diagram of eight sky octants, with a black hole at the center and a camera pointing toward it from x = +20 M" aria-describedby="sky-orbit-help">The eight sky octants surround the black hole. The camera points toward the black hole from x = +20 M.</canvas>
+      <figcaption id="sky-orbit-help">
+        <span>Drag or use the arrow keys to rotate.</span>
+        <button type="button" id="sky-orbit-reset">Reset view</button>
+      </figcaption>
+      </figure>
+    </div>
+    <details class="map-details" id="map-details"><summary>Observer and map details</summary>
+      <label class="switch-row" for="antialias"><input id="antialias" type="checkbox" checked disabled />Antialiasing</label>
+      <section class="view-context" aria-labelledby="view-context-title">
+        <div class="locator-wrap">
+          <h3 id="view-context-title">Map location</h3>
+          <svg id="locator" viewBox="0 0 640 480" role="img" aria-labelledby="locator-title locator-desc">
+            <title id="locator-title">Overview locator</title>
+            <desc id="locator-desc">The full 60-degree observer view. A marker locates the independently sampled edge patch when one is active.</desc>
+            <image id="locator-image" href="data/schwarzschild-octants/overview-r20.png?v=e7fed7c7368f" width="640" height="480" />
+            <rect id="locator-extent" x="1" y="1" width="638" height="478" />
+            <circle id="locator-marker" cx="320" cy="240" r="12" visibility="hidden" />
+            <path id="locator-crosshair" d="" visibility="hidden" />
+          </svg>
+          <p class="hint" id="locator-caption">Full overview · fixed eight-color reference</p>
+        </div>
+        <div class="sampling-details">
+          <span class="eyebrow">Active sampling</span>
+          <p id="view-description">A 640 × 480 ray map across the full 60° vertical field.</p>
+          <dl>
+            <div class="metric"><dt>View</dt><dd id="view-kind">Overview</dd></div>
+            <div class="metric"><dt>Sampling vs. overview</dt><dd id="refinement-value">1×</dd></div>
+            <div class="metric"><dt>Span in overview pixels</dt><dd id="overview-span">640 × 480</dd></div>
+            <div class="metric"><dt>q<sub>x</sub> bounds</dt><dd id="qx-bounds">—</dd></div>
+            <div class="metric"><dt>q<sub>y</sub> bounds</dt><dd id="qy-bounds">—</dd></div>
+          </dl>
+          <p class="hint" id="sampling-note">The dark region is the capture shadow, not the event horizon.</p>
+        </div>
+      </section>
+      <p class="hint" id="aa-detail">Validating subpixel samples…</p>
+        <div class="image-footer"><span id="source-label">Eight-color sky at infinity</span><span id="map-summary">Preparing map…</span></div>
+        <p class="hint" id="source-description"></p>
+      <section class="geometry">
+        <h3>Observer and geometry</h3>
+        <dl>
+          <div class="metric"><dt>Metric</dt><dd id="metric-name">—</dd></div>
+          <div class="metric"><dt>Spin a/M</dt><dd id="spin-value">—</dd></div>
+          <div class="metric"><dt>Observer radius</dt><dd id="observer-radius">—</dd></div>
+          <div class="metric"><dt>Overview vertical field</dt><dd id="field-of-view">—</dd></div>
+          <div class="metric"><dt>Event horizon</dt><dd id="horizon-radius">—</dd></div>
+          <div class="metric"><dt id="photon-label">Photon sphere</dt><dd id="photon-radius">—</dd></div>
+          <div class="metric"><dt id="shadow-label">Shadow radius</dt><dd id="shadow-angle">—</dd></div>
+        </dl>
+        <p class="hint" id="observer-description">Static equatorial observer looking inward.</p>
+      </section>
+
+        <p class="hint">Photos and camera frames are projected onto a patch of sky. They stay in your browser.</p>
+    </details>
+  </section>
+</main>
+<footer class="page-footer"><a href="moving/index.html#credits">Image credits</a></footer>
+<script defer src="saved-views.js?v=85b4e1606912"></script>
+<script defer src="sky-orbit.js?v=5c2d7aa48e1b"></script>
+<script defer src="explorer-layout.js?v=8afac8a9e883"></script>
+</body>
 </html>

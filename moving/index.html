@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="A moving Schwarzschild black hole lenses a fixed photographic Milky Way sky, or an eight-color sky. View either background without lensing." />
+  <title>Moving black hole</title>
+  <link rel="stylesheet" href="../styles.css?v=0b7bb391ba0c" />
+  <link rel="stylesheet" href="../examples/examples.css?v=a4d8a46d5395" />
+  <link rel="stylesheet" href="../reference.css?v=c8c61a315d78" />
+  <script src="moving.js?v=1cab97ccf241" defer></script>
+  <script src="../bh-visibility.js?v=3c3e2d0764b9" defer></script>
+</head>
+<body class="moving-page">
+<header class="site-header">
+  <div class="header-copy"><h1>Moving black hole</h1></div>
+  <nav aria-label="Main navigation">
+    <a href="../index.html">SingleBh</a>
+    <a href="../ray-viewer/index.html">3D</a>
+    <a href="../moving/index.html" aria-current="page">MovingBh</a>
+    <a href="../examples/index.html">Disk</a>
+    <a href="../binary/index.html">Binary</a>
+  </nav>
+</header>
+<main>
+  <section class="experiment" id="milky-way" aria-label="Moving black hole film">
+    <div class="movie-layout">
+      <figure class="render-figure movie-figure" data-moving-film="milky-way">
+        <div class="bh-scene">
+          <video class="lensed-media" controls loop playsinline preload="none" poster="../examples/media/milky-way-middle.png?v=ae209a7c9054" width="1080" height="1080" aria-label="Schwarzschild black hole moving across a real photographic Milky Way sky">
+            <source src="../examples/media/milky-way.mp4?v=64b126eff5a4" type="video/mp4" />
+            <p><a href="../examples/media/milky-way.mp4?v=64b126eff5a4">Download the Milky Way lensing movie</a>.</p>
+          </video>
+          <img class="unlensed-layer" src="../references/moving-milky-way.webp?v=e296d1b532db" width="600" height="600" alt="Same fixed sky without a black hole" />
+        </div>
+      </figure>
+      <figure class="render-figure movie-figure" data-moving-film="octants" hidden>
+        <div class="bh-scene">
+          <video class="lensed-media" controls loop playsinline preload="none" poster="media/octants-poster.png?v=ec5b1019a7e7" width="864" height="864" aria-label="Black hole moving across a fixed eight-color sky">
+            <source src="media/octants.mp4?v=767648169e91" type="video/mp4" />
+            <p><a href="media/octants.mp4?v=767648169e91">Download the eight-color film</a>.</p>
+          </video>
+          <img class="unlensed-layer" src="media/octants-background.png?v=0b3d8af038f3" width="600" height="600" alt="Four far-side octants in the same camera with the black hole removed" />
+        </div>
+      </figure>
+      <div class="experiment-notes">
+        <div class="choices moving-sources" role="group" aria-label="Sky background">
+          <button type="button" data-moving-sky="milky-way" aria-pressed="true">Milky Way</button>
+          <button type="button" data-moving-sky="octants" aria-pressed="false">Eight colors</button>
+        </div>
+        <label class="switch-row"><input id="moving-show-black-hole" type="checkbox" checked data-bh-visibility />Show black hole</label>
+        <a class="video-download" id="moving-download" href="../examples/media/milky-way.mp4?v=64b126eff5a4" download>Save video</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-notes" id="moving-method">
+    <h2>How it works</h2>
+    <p>A nonspinning black hole moves across a fixed camera’s view at 0.03 c. Switch off the black hole to see the same sky without lensing.</p>
+  </section>
+</main>
+<footer class="page-footer" id="credits"><p>Milky Way photograph by ESO/S. Brunier. The panorama was rotated, filtered, brightness-adjusted and lensed. <a href="https://www.eso.org/public/images/eso0932a/">Original panorama</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p></footer>
+</body>
+</html>

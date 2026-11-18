@@ -1,0 +1,48 @@
+.experiment { margin-top: 64px; padding-top: 36px; border-top: 1px solid var(--rule); scroll-margin-top: 24px; }
+.experiment-heading .eyebrow { color: var(--accent); }
+.experiment-heading h2 { margin: 8px 0 26px; font-size: clamp(1.65rem, 3vw, 2.3rem); font-weight: 500; letter-spacing: -.035em; }
+.experiment > p { max-width: 780px; }
+.experiment-layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(240px, 1fr); gap: 32px; align-items: start; }
+.render-figure { margin: 0; min-width: 0; }
+.render-figure img, .render-figure video { display: block; width: 100%; height: auto; background: #000; border: 1px solid var(--rule); border-radius: 10px; }
+figcaption { padding-top: 10px; color: var(--muted); font-size: .78rem; }
+.experiment-notes { padding: 26px; background: var(--paper); border: 1px solid var(--rule); border-radius: 10px; }
+.experiment-notes label { display: block; font-size: .8rem; margin-bottom: 8px; font-weight: 600; }
+.experiment-notes select { font-size: .85rem; }
+.experiment-notes p { margin-top: 18px; font-size: .9rem; }
+.experiment-notes dl { margin: 20px 0; font-size: .8rem; }
+.experiment-notes .hint, .experiment-notes .small-links, .experiment-notes .photo-credit { font-size: .78rem; }
+.moving-page main > .experiment { margin: 0; padding: 0; border: 0; }
+.moving-page main, .moving-page .page-footer { max-width: min(1650px, max(1130px, calc(100svh + 304px))); }
+.movie-layout { display: grid; grid-template-columns: minmax(0, 1fr) clamp(220px, 23vw, 330px); gap: 24px; align-items: start; }
+.movie-figure video { aspect-ratio: 1; object-fit: contain; }
+.movie-layout .experiment-notes .switch-row { display: flex; align-items: center; gap: 7px; margin: 14px 0 10px; font-weight: 500; }
+.video-download { display: inline-block; font-size: .8rem; }
+@media (max-width: 700px) { .experiment-layout, .movie-layout { grid-template-columns: minmax(0, 1fr); gap: 20px; } .experiment { margin-top: 32px; } .experiment-heading h2 { font-size: 1.5rem; } .experiment-notes { padding: 20px; } }
+.disk-comparison-page main { padding-top: 30px; }
+.paired-disks { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+.paired-disks .experiment { margin-top: 14px; padding-top: 0; border: 0; min-width: 0; }
+.paired-disks .experiment-heading h2 { font-size: clamp(1rem, 1.5vw, 1.3rem); margin: 0 0 10px; }
+.paired-figure video { aspect-ratio: 1; object-fit: contain; }
+.disk-stills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.disk-stills .experiment-layout { grid-template-columns: minmax(0, 1fr); gap: 9px; }
+.disk-stills .experiment-notes { padding: 12px; }
+.disk-stills .media-download { margin: 0; }
+.video-links { display: flex; flex-wrap: wrap; gap: 7px 16px; }
+.pair-controls { display: flex; align-items: center; gap: 18px; margin-top: 20px; padding: 16px; background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; }
+.disk-pair > .pair-controls { margin: 0; }
+.pair-transport { display: flex; gap: 8px; flex-shrink: 0; }
+#pair-play { min-width: 96px; background: var(--selected); color: var(--accent-ink); border-color: #c49a5c; }
+.pair-scrubber { flex: 1; display: flex; min-width: 80px; }
+.pair-scrubber input { width: 100%; accent-color: var(--accent); }
+#pair-position { min-width: 118px; text-align: right; font-size: .76rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pair-chapters { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.pair-chapters button { color: var(--muted); background: transparent; border-color: var(--rule); min-height: 30px; font-size: .7rem; padding: 5px 10px; }
+.pair-status { text-align: center; margin-bottom: 12px; }
+.pair-status:empty { min-height: 0; margin-top: 0; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.disk-pair:fullscreen { background: var(--page); padding: 20px 32px; overflow: auto; }
+.disk-pair:fullscreen .paired-disks .experiment { border: 0; padding-top: 0; }
+.disk-pair:fullscreen .paired-disks .experiment-heading h2 { min-height: 0; margin-bottom: 12px; }
+.disk-pair:fullscreen .paired-figure video { max-height: 68vh; }
+@media (max-width: 700px) { .paired-disks { gap: 12px; } .disk-stills { grid-template-columns: 1fr; } .pair-controls { flex-wrap: wrap; gap: 10px; padding: 12px; } .pair-scrubber { order: 3; flex-basis: 100%; } #pair-position { margin-left: auto; } .disk-pair:fullscreen { padding: 12px; } }

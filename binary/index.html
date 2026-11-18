@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Three eight-color binary lensing configurations and one edge-on photographic view, with matching backgrounds without black holes." />
+  <title>Binary black holes</title>
+  <link rel="stylesheet" href="../styles.css?v=0b7bb391ba0c" />
+  <link rel="stylesheet" href="../reference.css?v=c8c61a315d78" />
+  <link rel="stylesheet" href="binary.css?v=2e0bed5f3133" />
+  <script src="../bh-visibility.js?v=3c3e2d0764b9" defer></script>
+  <script src="playback.js?v=b4c16e759841" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-copy"><h1>Binary black holes</h1><p class="header-subtitle">Nonspinning · mass ratio 2:1</p></div>
+  <nav aria-label="Main navigation">
+    <a href="../index.html">SingleBh</a>
+    <a href="../ray-viewer/index.html">3D</a>
+    <a href="../moving/index.html">MovingBh</a>
+    <a href="../examples/index.html">Disk</a>
+    <a href="../binary/index.html" aria-current="page">Binary</a>
+  </nav>
+</header>
+<main>
+  <div class="binary-controls">
+    <div class="binary-toolbar">
+      <nav class="binary-views" aria-label="Jump to a binary view">
+        <div class="binary-color-views">
+          <span>Angle from rotation axis</span>
+          <a href="#face-on" aria-label="0° face-on, eight colors">0°</a>
+          <a href="#axis80" aria-label="80° inclined, eight colors">80°</a>
+          <a href="#edge-on" aria-label="90° edge-on, eight colors">90°</a>
+        </div>
+        <a href="#stars-90">Milky Way · 90°</a>
+      </nav>
+      <div class="binary-actions">
+        <button id="binary-play-all" class="binary-play-all" type="button" hidden>Play all</button>
+        <label class="binary-hole-switch"><input id="binary-show-black-hole" type="checkbox" checked data-bh-visibility />Show black holes</label>
+      </div>
+    </div>
+    <p class="status" id="binary-playback-status" role="status" data-error="true"></p>
+    <p class="binary-note">These clips use a frozen-metric approximation to illustrate binary lensing. <a href="#binary-method">Read more</a></p>
+  </div>
+  <div class="binary-cases">
+    <article class="binary-case" id="face-on" aria-labelledby="face-on-title">
+      <h2 id="face-on-title">Face-on · 0°</h2>
+      <figure class="binary-comparison">
+        <div class="bh-scene">
+          <video class="lensed-media" controls playsinline preload="none" poster="media/face-on-colors.png?v=5fd0d1526fa4" width="1200" height="800" aria-label="Eight-color binary at 0 degrees"><source src="media/face-on-colors.mp4?v=f4e3b26832f3" type="video/mp4" /></video>
+          <img class="unlensed-layer" src="../references/binary-octants.png?v=afed783ff037" width="600" height="400" alt="The four far-side source octants visible in the same camera without either black hole" />
+        </div>
+      </figure>
+    </article>
+
+    <article class="binary-case" id="axis80" aria-labelledby="axis80-title">
+      <h2 id="axis80-title">Inclined · 80°</h2>
+      <figure class="binary-comparison">
+        <div class="bh-scene">
+          <video class="lensed-media" controls playsinline preload="none" poster="media/axis80-colors.png?v=0b89f2f0feae" width="1200" height="800" aria-label="Eight-color binary at 80 degrees"><source src="media/axis80-colors.mp4?v=ba31192397e2" type="video/mp4" /></video>
+          <img class="unlensed-layer" src="../references/binary-octants.png?v=afed783ff037" width="600" height="400" alt="The four far-side source octants visible in the same camera without either black hole" />
+        </div>
+      </figure>
+    </article>
+
+    <article class="binary-case" id="edge-on" aria-labelledby="edge-on-title">
+      <h2 id="edge-on-title">Edge-on · 90°</h2>
+      <figure class="binary-comparison">
+        <div class="bh-scene">
+          <video class="lensed-media" controls playsinline preload="none" poster="media/edge-on-colors.png?v=13da2bc67327" width="1200" height="800" aria-label="Eight-color binary at 90 degrees"><source src="media/edge-on-colors.mp4?v=9c240800039f" type="video/mp4" /></video>
+          <img class="unlensed-layer" src="../references/binary-octants.png?v=afed783ff037" width="600" height="400" alt="The four far-side source octants visible in the same camera without either black hole" />
+        </div>
+      </figure>
+    </article>
+
+    <article class="binary-case" id="stars-90" aria-labelledby="stars-title">
+      <h2 id="stars-title">Milky Way · 90°</h2>
+      <figure class="binary-comparison">
+        <div class="bh-scene">
+          <video class="lensed-media" controls playsinline preload="none" poster="media/q2-edge-on-stars.webp?v=b8f5feb90bc4" width="1800" height="1200" aria-label="Mass-ratio two binary viewed edge-on against the Milky Way"><source src="media/q2-edge-on-stars.mp4?v=398c680b3d18" type="video/mp4" /></video>
+          <img class="unlensed-layer" src="../references/binary-milky-way.webp?v=828dd39f6e5f" width="900" height="600" alt="The same fixed Milky Way panorama through the 92-degree camera without either black hole" />
+        </div>
+      </figure>
+    </article>
+  </div>
+  <section class="binary-method page-notes" id="binary-method" aria-labelledby="binary-method-title">
+    <h2 id="binary-method-title">Frozen binary model</h2>
+    <p>The camera and sky stay fixed. We rotate the Brill–Lindquist metric between frames and hold it fixed while tracing each frame, a fast-light approximation. The black holes stay at a fixed separation.</p>
+    <h3>SXS merger simulations</h3>
+    <p>See how light travels through the evolving spacetime of a simulated merger.</p>
+    <ul class="binary-sxs-links">
+      <li><a href="https://www.youtube.com/watch?v=Qg6PwRI2uS8">Face-on merger (YouTube)</a></li>
+      <li><a href="https://www.youtube.com/watch?v=ENd8Sz0AFOk">Edge-on merger (YouTube)</a></li>
+      <li><a href="https://arxiv.org/abs/1410.7775">Bohn et al. · What does a binary black hole merger look like?</a></li>
+    </ul>
+  </section>
+</main>
+<footer class="page-footer"><p>Milky Way photograph by ESO/S. Brunier. The panorama was rotated, filtered, exposure-adjusted and lensed. <a href="https://www.eso.org/public/images/eso0932a/">Original panorama</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p></footer>
+</body>
+</html>

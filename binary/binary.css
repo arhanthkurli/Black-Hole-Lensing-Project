@@ -1,0 +1,24 @@
+.binary-controls { margin-bottom: 18px; padding: 12px 16px; border: 1px solid var(--rule); border-radius: 9px; background: var(--paper); }
+.binary-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; }
+.binary-views, .binary-color-views { display: flex; align-items: center; gap: 6px; }
+.binary-views { flex-wrap: wrap; column-gap: 12px; padding: 0; }
+.binary-color-views > span { margin-right: 4px; color: var(--muted); font-size: .76rem; white-space: normal; }
+.binary-views a { padding: 5px 10px; border-radius: 5px; background: var(--raised); color: var(--ink); font-size: .8rem; text-decoration: none; }
+.binary-views a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+.binary-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+.binary-play-all { min-width: 76px; min-height: 34px; padding-inline: 10px; background: var(--selected); border-color: #c49a5c; color: var(--accent-ink); }
+.binary-play-all:hover:not(:disabled) { background: var(--selected-hover); }
+.binary-hole-switch { display: inline-flex; align-items: center; gap: 7px; min-height: 34px; font-size: .82rem; cursor: pointer; }
+.binary-hole-switch input { margin: 0; }
+.binary-note { margin: 8px 0 0; padding-top: 8px; border-top: 1px solid var(--rule); color: var(--muted); font-size: .8rem; }
+.binary-method { max-width: 780px; margin-top: 28px; }
+.binary-method h2 { margin-top: 0; }
+.binary-method h3 { margin: 15px 0 4px; }
+.binary-method p { font-size: .86rem; }
+.binary-sxs-links { display: flex; flex-wrap: wrap; gap: 5px 16px; list-style: none; padding: 0; margin: 8px 0 0; font-size: .78rem; }
+.binary-cases { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.binary-case { padding: 14px; background: var(--paper); border: 1px solid var(--rule); border-radius: 10px; }
+.binary-case h2 { font-size: 1.02rem; font-weight: 580; margin: 0 0 10px; }
+.binary-comparison { min-width: 0; margin: 0 auto; }
+.binary-comparison video, .binary-comparison img { display: block; width: 100%; height: auto; border-radius: 5px; background: #000; }
+@media (max-width: 700px) { .binary-cases { grid-template-columns: minmax(0, 1fr); gap: 12px; } }
